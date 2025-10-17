@@ -1,34 +1,54 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const bodyParser = require('body-parser');
+const path = require('path');
 
 const app = express();
 
+// Middleware para tratar JSON e dados de formulário
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.engine('html', require('ejs').renderFile); // Set EJS as the template engine
-app.set('view engine', 'html'); // Use .html files for views
-app.use('/public', express.static(path.join(__dirname, 'public'))); // Serve static files from the 'public' directory
-app.set('views', __dirname + '/views'); // Set the views directory
+// Configuração do mecanismo de visualização
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
+app.set('views', path.join(__dirname, '/pages'));
 
-app.listen(5000, () => {
-    console.log(`Server running on http://localhost:5000`);
-});
+// Servir arquivos estáticos
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
-// Route to render the main page
+// Rota principal
 app.get('/', (req, res) => {
-    console.log(req.query);
-
-    if(req.query.busca == null){
-        res.send('home');
+    if (req.query.busca == null) {
+        res.render('home', {});
     } else {
-        res.send(`Você buscou ${req.query.busca}`);
+        res.send('Você buscou: ' + req.query.busca);
     }
 });
 
+// Rota de notícias
+app.get('/noticias', (req, res) => {
+    res.render('noticias', {});
+});
+// Rota de esportes
+app.get('/esportes', (req, res) => {
+    res.render('esportes', {});
+});
+
+// Rota de entretenimento
+app.get('/entretenimento', (req, res) => {
+    res.render('entretenimento', {});
+});
+// Rota de contato
+app.get('/contato', (req, res) => {
+    res.render('contato', {});
+});
+
+// Rota dinâmica
 app.get('/:slug', (req, res) => {
     res.send(req.params.slug);
-})
+});
 
+// servidor
+app.listen(5000, () => {
+    console.log('Server rodando em http://localhost:5000');
+});
